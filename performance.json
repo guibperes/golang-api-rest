@@ -1,0 +1,72 @@
+[
+  { // 10 Users
+    "transactions": 584935,
+    "availability": 100.00,
+    "elapsed_time": 59.86,
+    "data_transferred": 399.97,
+    "response_time": 0.00,
+    "transaction_rate": 9771.72,
+    "throughput": 6.68,
+    "concurrency": 24.28,
+    "successful_transactions": 584935,
+    "failed_transactions": 0,
+    "longest_transaction": 0.05,
+    "shortest_transaction": 0.00
+  },
+  { // 20 Users
+    "transactions": 580431,
+    "availability": 100.00,
+    "elapsed_time": 59.55,
+    "data_transferred": 396.89,
+    "response_time": 0.00,
+    "transaction_rate": 9746.95,
+    "throughput": 6.66,
+    "concurrency": 19.27,
+    "successful_transactions": 580431,
+    "failed_transactions": 0,
+    "longest_transaction": 0.05,
+    "shortest_transaction": 0.00
+  },
+  { // 50 Users	
+    "transactions": 543475,
+    "availability": 100.00,
+    "elapsed_time": 59.29,
+    "data_transferred": 371.62,
+    "response_time": 0.01,
+    "transaction_rate": 9166.39,
+    "throughput": 6.27,
+    "concurrency": 49.26,
+    "successful_transactions": 543475,
+    "failed_transactions": 0,
+    "longest_transaction": 0.06,
+    "shortest_transaction": 0.00
+  },
+  { // 100 Users
+    "transactions": 552330,
+    "availability": 100.00,
+    "elapsed_time": 59.92,
+    "data_transferred": 377.67,
+    "response_time": 0.01,
+    "transaction_rate": 9217.79,
+    "throughput": 6.30,
+    "concurrency": 99.22,
+    "successful_transactions": 552330,
+    "failed_transactions": 0,
+    "longest_transaction": 0.08,
+    "shortest_transaction": 0.00
+  },
+  { // 1000 Users
+    "transactions": 373077,
+    "availability": 100.00,
+    "elapsed_time": 59.99,
+    "data_transferred": 255.10,
+    "response_time": 0.16,
+    "transaction_rate": 6218.99,
+    "throughput": 4.25,
+    "concurrency": 993.30,
+    "successful_transactions": 373077,
+    "failed_transactions": 0,
+    "longest_transaction": 0.81,
+    "shortest_transaction": 0.00
+  }
+]
