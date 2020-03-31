@@ -3,16 +3,21 @@ package main
 import (
 	"net/http"
 
+	"github.com/guibperes/golang-api-rest/app/libs"
+
 	"github.com/gorilla/mux"
 	"github.com/guibperes/golang-api-rest/app/api/post"
 )
 
 var (
+	log            = libs.Log{}
 	postController = post.Controller{}
 )
 
 func main() {
 	var router = mux.NewRouter()
+
+	router.Use(log.GetLogMiddleware)
 
 	router.
 		HandleFunc("/posts", postController.Save).
@@ -30,5 +35,6 @@ func main() {
 		HandleFunc("/posts/{id}", postController.GetByID).
 		Methods("GET")
 
-	http.ListenAndServe(":5000", router)
+	log.Info("Server started on port 5000")
+	log.Fatal(http.ListenAndServe(":5000", router))
 }
