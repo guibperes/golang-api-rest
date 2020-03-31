@@ -13,6 +13,11 @@ type Request struct {
 	Data *http.Request
 }
 
+// RequestBuilder build the response object
+func RequestBuilder(data *http.Request) Request {
+	return Request{Data: data}
+}
+
 // ParseJSONBody return object of request body
 func (request *Request) ParseJSONBody(data interface{}) {
 	json.
