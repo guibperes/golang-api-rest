@@ -1,4 +1,4 @@
-package libs
+package server
 
 import (
 	"encoding/json"
@@ -10,6 +10,11 @@ type Response struct {
 	Writer http.ResponseWriter
 	Status int
 	Data   interface{}
+}
+
+// ResponseBuilder build the response object
+func ResponseBuilder(writer http.ResponseWriter, status int, data interface{}) Response {
+	return Response{Writer: writer, Status: status, Data: data}
 }
 
 // SendJSON create a JSON response
