@@ -1,11 +1,8 @@
 package post
 
 import (
-	"encoding/json"
 	"net/http"
-	"strconv"
 
-	"github.com/gorilla/mux"
 	"github.com/guibperes/golang-api-rest/app/libs"
 )
 
@@ -18,10 +15,10 @@ type Controller struct{}
 
 // Save a new post
 func (c *Controller) Save(w http.ResponseWriter, r *http.Request) {
+	var request = libs.Request{Data: r}
+
 	var post Post
-	json.
-		NewDecoder(r.Body).
-		Decode(&post)
+	request.ParseJSONBody(&post)
 
 	var response = libs.Response{Writer: w, Status: 200, Data: service.Save(post)}
 	response.SendJSON()
@@ -29,7 +26,8 @@ func (c *Controller) Save(w http.ResponseWriter, r *http.Request) {
 
 // UpdateByID a post
 func (c *Controller) UpdateByID(w http.ResponseWriter, r *http.Request) {
-	var postID, err = strconv.Atoi(mux.Vars(r)["id"])
+	var request = libs.Request{Data: r}
+	var postID, err = request.GetPathParameterAndParseInt("id")
 
 	if err != nil {
 		var response = libs.Response{Writer: w, Status: 400, Data: libs.Message{Message: "Cannot convert id to integer"}}
@@ -44,9 +42,7 @@ func (c *Controller) UpdateByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var post Post
-	json.
-		NewDecoder(r.Body).
-		Decode(&post)
+	request.ParseJSONBody(&post)
 
 	var response = libs.Response{Writer: w, Status: 200, Data: service.UpdateByID(postID, post)}
 	response.SendJSON()
@@ -54,7 +50,8 @@ func (c *Controller) UpdateByID(w http.ResponseWriter, r *http.Request) {
 
 // DeleteByID a post
 func (c *Controller) DeleteByID(w http.ResponseWriter, r *http.Request) {
-	var postID, err = strconv.Atoi(mux.Vars(r)["id"])
+	var request = libs.Request{Data: r}
+	var postID, err = request.GetPathParameterAndParseInt("id")
 
 	if err != nil {
 		var response = libs.Response{Writer: w, Status: 400, Data: libs.Message{Message: "Cannot convert id to integer"}}
@@ -82,7 +79,8 @@ func (c *Controller) GetAll(w http.ResponseWriter, r *http.Request) {
 
 // GetByID a post
 func (c *Controller) GetByID(w http.ResponseWriter, r *http.Request) {
-	var postID, err = strconv.Atoi(mux.Vars(r)["id"])
+	var request = libs.Request{Data: r}
+	var postID, err = request.GetPathParameterAndParseInt("id")
 
 	if err != nil {
 		var response = libs.Response{Writer: w, Status: 400, Data: libs.Message{Message: "Cannot convert id to integer"}}
