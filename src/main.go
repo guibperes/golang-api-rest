@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/guibperes/golang-api-rest/src/response"
 )
 
 // Message Data Transfer Object(DTO)
@@ -29,52 +30,6 @@ type User struct {
 
 var database = []Post{}
 
-// Response handler to empty and JSON response
-type Response struct {
-	Writer http.ResponseWriter
-	Status int
-	Data   interface{}
-}
-
-// SetWriter set the writer parameter
-func (response Response) SetWriter(writer http.ResponseWriter) Response {
-	response.Writer = writer
-	return response
-}
-
-// SetStatus set the response status parameter
-func (response Response) SetStatus(status int) Response {
-	response.Status = status
-	return response
-}
-
-// SetBody set the response body parameter
-func (response Response) SetBody(data interface{}) Response {
-	response.Data = data
-	return response
-}
-
-// ResponseBuilder function builder to a Response object
-func ResponseBuilder() Response {
-	return Response{Status: 200}
-}
-
-// SendJSON create a JSON response
-func (response Response) SendJSON() {
-	response.Writer.WriteHeader(response.Status)
-	response.Writer.
-		Header().
-		Set("Content-Type", "application/json")
-	json.
-		NewEncoder(response.Writer).
-		Encode(response.Data)
-}
-
-// SendEmpty create a empty response
-func (response Response) SendEmpty() {
-	response.Writer.WriteHeader(response.Status)
-}
-
 func save(w http.ResponseWriter, r *http.Request) {
 	var post Post
 	json.
@@ -83,14 +38,14 @@ func save(w http.ResponseWriter, r *http.Request) {
 
 	database = append(database, post)
 
-	ResponseBuilder().
+	response.Builder().
 		SetWriter(w).
 		SetBody(database).
 		SendJSON()
 }
 
 func getAll(w http.ResponseWriter, r *http.Request) {
-	ResponseBuilder().
+	response.Builder().
 		SetWriter(w).
 		SetBody(database).
 		SendJSON()
@@ -100,7 +55,7 @@ func getByID(w http.ResponseWriter, r *http.Request) {
 	var postID, err = strconv.Atoi(mux.Vars(r)["id"])
 
 	if err != nil {
-		ResponseBuilder().
+		response.Builder().
 			SetWriter(w).
 			SetStatus(400).
 			SetBody(Message{"Cannot convert id to integer"}).
@@ -109,7 +64,7 @@ func getByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if postID < 0 || postID >= len(database) {
-		ResponseBuilder().
+		response.Builder().
 			SetWriter(w).
 			SetStatus(404).
 			SetBody(Message{"Cannot find post with the provided id"}).
@@ -117,7 +72,7 @@ func getByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ResponseBuilder().
+	response.Builder().
 		SetWriter(w).
 		SetBody(database[postID]).
 		SendJSON()
@@ -127,7 +82,7 @@ func patchByID(w http.ResponseWriter, r *http.Request) {
 	var postID, err = strconv.Atoi(mux.Vars(r)["id"])
 
 	if err != nil {
-		ResponseBuilder().
+		response.Builder().
 			SetWriter(w).
 			SetStatus(400).
 			SetBody(Message{"Cannot convert id to integer"}).
@@ -136,7 +91,7 @@ func patchByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if postID < 0 || postID >= len(database) {
-		ResponseBuilder().
+		response.Builder().
 			SetWriter(w).
 			SetStatus(404).
 			SetBody(Message{"Cannot find post with the provided id"}).
@@ -149,7 +104,7 @@ func patchByID(w http.ResponseWriter, r *http.Request) {
 		NewDecoder(r.Body).
 		Decode(post)
 
-	ResponseBuilder().
+	response.Builder().
 		SetWriter(w).
 		SetBody(post).
 		SendJSON()
@@ -159,7 +114,7 @@ func deleteByID(w http.ResponseWriter, r *http.Request) {
 	var postID, err = strconv.Atoi(mux.Vars(r)["id"])
 
 	if err != nil {
-		ResponseBuilder().
+		response.Builder().
 			SetWriter(w).
 			SetStatus(400).
 			SetBody(Message{"Cannot convert id to integer"}).
@@ -168,7 +123,7 @@ func deleteByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if postID < 0 || postID >= len(database) {
-		ResponseBuilder().
+		response.Builder().
 			SetWriter(w).
 			SetStatus(404).
 			SetBody(Message{"Cannot find post with the provided id"}).
@@ -178,7 +133,7 @@ func deleteByID(w http.ResponseWriter, r *http.Request) {
 
 	database = append(database[:postID], database[postID+1:]...)
 
-	ResponseBuilder().
+	response.Builder().
 		SetWriter(w).
 		SendEmpty()
 }
