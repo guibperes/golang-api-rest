@@ -29,20 +29,38 @@ type User struct {
 
 var database = []Post{}
 
-// ResponseJSON parameters to create JSON response
-type ResponseJSON struct {
+// Response handler to empty and JSON response
+type Response struct {
 	Writer http.ResponseWriter
 	Status int
 	Data   interface{}
 }
 
-// ResponseEmpty parameters to create empty response
-type ResponseEmpty struct {
-	Writer http.ResponseWriter
-	Status int
+// SetWriter set the writer parameter
+func (response Response) SetWriter(writer http.ResponseWriter) Response {
+	response.Writer = writer
+	return response
 }
 
-func sendJSON(response ResponseJSON) {
+// SetStatus set the response status parameter
+func (response Response) SetStatus(status int) Response {
+	response.Status = status
+	return response
+}
+
+// SetBody set the response body parameter
+func (response Response) SetBody(data interface{}) Response {
+	response.Data = data
+	return response
+}
+
+// ResponseBuilder function builder to a Response object
+func ResponseBuilder() Response {
+	return Response{Status: 200}
+}
+
+// SendJSON create a JSON response
+func (response Response) SendJSON() {
 	response.Writer.WriteHeader(response.Status)
 	response.Writer.
 		Header().
@@ -52,7 +70,8 @@ func sendJSON(response ResponseJSON) {
 		Encode(response.Data)
 }
 
-func sendEmpty(response ResponseEmpty) {
+// SendEmpty create a empty response
+func (response Response) SendEmpty() {
 	response.Writer.WriteHeader(response.Status)
 }
 
@@ -64,62 +83,64 @@ func save(w http.ResponseWriter, r *http.Request) {
 
 	database = append(database, post)
 
-	sendJSON(ResponseJSON{Writer: w, Status: 200, Data: database})
+	ResponseBuilder().
+		SetWriter(w).
+		SetBody(database).
+		SendJSON()
 }
 
 func getAll(w http.ResponseWriter, r *http.Request) {
-	sendJSON(ResponseJSON{Writer: w, Status: 200, Data: database})
+	ResponseBuilder().
+		SetWriter(w).
+		SetBody(database).
+		SendJSON()
 }
 
 func getByID(w http.ResponseWriter, r *http.Request) {
 	var postID, err = strconv.Atoi(mux.Vars(r)["id"])
 
 	if err != nil {
-		sendJSON(ResponseJSON{Writer: w, Status: 400, Data: Message{"Cannot convert id to integer"}})
+		ResponseBuilder().
+			SetWriter(w).
+			SetStatus(400).
+			SetBody(Message{"Cannot convert id to integer"}).
+			SendJSON()
 		return
 	}
 
 	if postID < 0 || postID >= len(database) {
-		sendJSON(ResponseJSON{Writer: w, Status: 404, Data: Message{"Cannot find post with the provided id"}})
+		ResponseBuilder().
+			SetWriter(w).
+			SetStatus(404).
+			SetBody(Message{"Cannot find post with the provided id"}).
+			SendJSON()
 		return
 	}
 
-	sendJSON(ResponseJSON{Writer: w, Status: 200, Data: database[postID]})
-}
-
-func updateByID(w http.ResponseWriter, r *http.Request) {
-	var postID, err = strconv.Atoi(mux.Vars(r)["id"])
-
-	if err != nil {
-		sendJSON(ResponseJSON{Writer: w, Status: 400, Data: Message{"Cannot convert id to integer"}})
-		return
-	}
-
-	if postID < 0 || postID >= len(database) {
-		sendJSON(ResponseJSON{Writer: w, Status: 404, Data: Message{"Cannot find post with the provided id"}})
-		return
-	}
-
-	var updatedPost Post
-	json.
-		NewDecoder(r.Body).
-		Decode(&updatedPost)
-
-	database[postID] = updatedPost
-
-	sendJSON(ResponseJSON{Writer: w, Status: 200, Data: database[postID]})
+	ResponseBuilder().
+		SetWriter(w).
+		SetBody(database[postID]).
+		SendJSON()
 }
 
 func patchByID(w http.ResponseWriter, r *http.Request) {
 	var postID, err = strconv.Atoi(mux.Vars(r)["id"])
 
 	if err != nil {
-		sendJSON(ResponseJSON{Writer: w, Status: 400, Data: Message{"Cannot convert id to integer"}})
+		ResponseBuilder().
+			SetWriter(w).
+			SetStatus(400).
+			SetBody(Message{"Cannot convert id to integer"}).
+			SendJSON()
 		return
 	}
 
 	if postID < 0 || postID >= len(database) {
-		sendJSON(ResponseJSON{Writer: w, Status: 404, Data: Message{"Cannot find post with the provided id"}})
+		ResponseBuilder().
+			SetWriter(w).
+			SetStatus(404).
+			SetBody(Message{"Cannot find post with the provided id"}).
+			SendJSON()
 		return
 	}
 
@@ -128,25 +149,38 @@ func patchByID(w http.ResponseWriter, r *http.Request) {
 		NewDecoder(r.Body).
 		Decode(post)
 
-	sendJSON(ResponseJSON{Writer: w, Status: 200, Data: post})
+	ResponseBuilder().
+		SetWriter(w).
+		SetBody(post).
+		SendJSON()
 }
 
 func deleteByID(w http.ResponseWriter, r *http.Request) {
 	var postID, err = strconv.Atoi(mux.Vars(r)["id"])
 
 	if err != nil {
-		sendJSON(ResponseJSON{Writer: w, Status: 400, Data: Message{"Cannot convert id to integer"}})
+		ResponseBuilder().
+			SetWriter(w).
+			SetStatus(400).
+			SetBody(Message{"Cannot convert id to integer"}).
+			SendJSON()
 		return
 	}
 
 	if postID < 0 || postID >= len(database) {
-		sendJSON(ResponseJSON{Writer: w, Status: 404, Data: Message{"Cannot find post with the provided id"}})
+		ResponseBuilder().
+			SetWriter(w).
+			SetStatus(404).
+			SetBody(Message{"Cannot find post with the provided id"}).
+			SendJSON()
 		return
 	}
 
 	database = append(database[:postID], database[postID+1:]...)
 
-	sendEmpty(ResponseEmpty{Writer: w, Status: 200})
+	ResponseBuilder().
+		SetWriter(w).
+		SendEmpty()
 }
 
 func main() {
@@ -155,9 +189,6 @@ func main() {
 	router.
 		HandleFunc("/posts", save).
 		Methods("POST")
-	router.
-		HandleFunc("/posts/{id}", updateByID).
-		Methods("PUT")
 	router.
 		HandleFunc("/posts/{id}", patchByID).
 		Methods("PATCH")
