@@ -37,7 +37,7 @@ func (c *Controller) UpdateByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if postID < 0 || postID >= len(database) {
+	if postID < 0 || postID >= service.GetLength() {
 		var response = libs.Response{Writer: w, Status: 404, Data: libs.Message{Message: "Cannot find post with the provided id"}}
 		response.SendJSON()
 		return
@@ -62,7 +62,7 @@ func (c *Controller) DeleteByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if postID < 0 || postID >= len(database) {
+	if postID < 0 || postID >= service.GetLength() {
 		var response = libs.Response{Writer: w, Status: 404, Data: libs.Message{Message: "Cannot find post with the provided id"}}
 		response.SendJSON()
 		return
