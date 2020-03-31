@@ -29,6 +29,33 @@ type User struct {
 
 var database = []Post{}
 
+// ResponseJSON parameters to create JSON response
+type ResponseJSON struct {
+	Writer http.ResponseWriter
+	Status int
+	Data   interface{}
+}
+
+// ResponseEmpty parameters to create empty response
+type ResponseEmpty struct {
+	Writer http.ResponseWriter
+	Status int
+}
+
+func sendJSON(response ResponseJSON) {
+	response.Writer.WriteHeader(response.Status)
+	response.Writer.
+		Header().
+		Set("Content-Type", "application/json")
+	json.
+		NewEncoder(response.Writer).
+		Encode(response.Data)
+}
+
+func sendEmpty(response ResponseEmpty) {
+	response.Writer.WriteHeader(response.Status)
+}
+
 func save(w http.ResponseWriter, r *http.Request) {
 	var post Post
 	json.
@@ -37,66 +64,39 @@ func save(w http.ResponseWriter, r *http.Request) {
 
 	database = append(database, post)
 
-	w.
-		Header().
-		Set("Content-Type", "application/json")
-	json.
-		NewEncoder(w).
-		Encode(database)
+	sendJSON(ResponseJSON{Writer: w, Status: 200, Data: database})
 }
 
 func getAll(w http.ResponseWriter, r *http.Request) {
-	w.
-		Header().
-		Set("Content-Type", "application/json")
-	json.
-		NewEncoder(w).
-		Encode(database)
+	sendJSON(ResponseJSON{Writer: w, Status: 200, Data: database})
 }
 
 func getByID(w http.ResponseWriter, r *http.Request) {
 	var postID, err = strconv.Atoi(mux.Vars(r)["id"])
 
 	if err != nil {
-		w.WriteHeader(400)
-		json.
-			NewEncoder(w).
-			Encode(Message{"Cannot convert id to integer"})
+		sendJSON(ResponseJSON{Writer: w, Status: 400, Data: Message{"Cannot convert id to integer"}})
 		return
 	}
 
 	if postID < 0 || postID >= len(database) {
-		w.WriteHeader(404)
-		json.
-			NewEncoder(w).
-			Encode(Message{"Cannot find post with the provided id"})
+		sendJSON(ResponseJSON{Writer: w, Status: 404, Data: Message{"Cannot find post with the provided id"}})
 		return
 	}
 
-	w.
-		Header().
-		Set("Content-Type", "application/json")
-	json.
-		NewEncoder(w).
-		Encode(database[postID])
+	sendJSON(ResponseJSON{Writer: w, Status: 200, Data: database[postID]})
 }
 
 func updateByID(w http.ResponseWriter, r *http.Request) {
 	var postID, err = strconv.Atoi(mux.Vars(r)["id"])
 
 	if err != nil {
-		w.WriteHeader(400)
-		json.
-			NewEncoder(w).
-			Encode(Message{"Cannot convert id to integer"})
+		sendJSON(ResponseJSON{Writer: w, Status: 400, Data: Message{"Cannot convert id to integer"}})
 		return
 	}
 
 	if postID < 0 || postID >= len(database) {
-		w.WriteHeader(404)
-		json.
-			NewEncoder(w).
-			Encode(Message{"Cannot find post with the provided id"})
+		sendJSON(ResponseJSON{Writer: w, Status: 404, Data: Message{"Cannot find post with the provided id"}})
 		return
 	}
 
@@ -107,30 +107,19 @@ func updateByID(w http.ResponseWriter, r *http.Request) {
 
 	database[postID] = updatedPost
 
-	w.
-		Header().
-		Set("Content-Type", "application/json")
-	json.
-		NewEncoder(w).
-		Encode(database[postID])
+	sendJSON(ResponseJSON{Writer: w, Status: 200, Data: database[postID]})
 }
 
 func patchByID(w http.ResponseWriter, r *http.Request) {
 	var postID, err = strconv.Atoi(mux.Vars(r)["id"])
 
 	if err != nil {
-		w.WriteHeader(400)
-		json.
-			NewEncoder(w).
-			Encode(Message{"Cannot convert id to integer"})
+		sendJSON(ResponseJSON{Writer: w, Status: 400, Data: Message{"Cannot convert id to integer"}})
 		return
 	}
 
 	if postID < 0 || postID >= len(database) {
-		w.WriteHeader(404)
-		json.
-			NewEncoder(w).
-			Encode(Message{"Cannot find post with the provided id"})
+		sendJSON(ResponseJSON{Writer: w, Status: 404, Data: Message{"Cannot find post with the provided id"}})
 		return
 	}
 
@@ -139,45 +128,25 @@ func patchByID(w http.ResponseWriter, r *http.Request) {
 		NewDecoder(r.Body).
 		Decode(post)
 
-	w.
-		Header().
-		Set("Content-Type", "application/json")
-	json.
-		NewEncoder(w).
-		Encode(post)
+	sendJSON(ResponseJSON{Writer: w, Status: 200, Data: post})
 }
 
 func deleteByID(w http.ResponseWriter, r *http.Request) {
 	var postID, err = strconv.Atoi(mux.Vars(r)["id"])
 
 	if err != nil {
-		w.WriteHeader(400)
-		json.
-			NewEncoder(w).
-			Encode(Message{"Cannot convert id to integer"})
+		sendJSON(ResponseJSON{Writer: w, Status: 400, Data: Message{"Cannot convert id to integer"}})
 		return
 	}
 
 	if postID < 0 || postID >= len(database) {
-		w.WriteHeader(404)
-		json.
-			NewEncoder(w).
-			Encode(Message{"Cannot find post with the provided id"})
+		sendJSON(ResponseJSON{Writer: w, Status: 404, Data: Message{"Cannot find post with the provided id"}})
 		return
 	}
 
 	database = append(database[:postID], database[postID+1:]...)
 
-	w.WriteHeader(200)
-}
-
-func notImplemented(w http.ResponseWriter, r *http.Request) {
-	w.
-		Header().
-		Set("Content-Type", "application/json")
-	json.
-		NewEncoder(w).
-		Encode(Message{"Route is not implemented"})
+	sendEmpty(ResponseEmpty{Writer: w, Status: 200})
 }
 
 func main() {
