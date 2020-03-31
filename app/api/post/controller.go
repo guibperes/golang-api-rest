@@ -15,7 +15,7 @@ var (
 type Controller struct{}
 
 // Save a new post
-func (c *Controller) Save(w http.ResponseWriter, r *http.Request) {
+func (c Controller) Save(w http.ResponseWriter, r *http.Request) {
 	var post Post
 	server.
 		RequestBuilder(r).
@@ -27,7 +27,7 @@ func (c *Controller) Save(w http.ResponseWriter, r *http.Request) {
 }
 
 // UpdateByID a post
-func (c *Controller) UpdateByID(w http.ResponseWriter, r *http.Request) {
+func (c Controller) UpdateByID(w http.ResponseWriter, r *http.Request) {
 	var request = server.RequestBuilder(r)
 	var postID, err = request.GetPathParameterAndParseInt("id")
 	var post Post
@@ -53,7 +53,7 @@ func (c *Controller) UpdateByID(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteByID a post
-func (c *Controller) DeleteByID(w http.ResponseWriter, r *http.Request) {
+func (c Controller) DeleteByID(w http.ResponseWriter, r *http.Request) {
 	var postID, err = server.
 		RequestBuilder(r).
 		GetPathParameterAndParseInt("id")
@@ -80,14 +80,14 @@ func (c *Controller) DeleteByID(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetAll saved posts
-func (c *Controller) GetAll(w http.ResponseWriter, r *http.Request) {
+func (c Controller) GetAll(w http.ResponseWriter, r *http.Request) {
 	server.
 		ResponseBuilder(w, 200, service.GetAll()).
 		SendJSON()
 }
 
 // GetByID a post
-func (c *Controller) GetByID(w http.ResponseWriter, r *http.Request) {
+func (c Controller) GetByID(w http.ResponseWriter, r *http.Request) {
 	var postID, err = server.
 		RequestBuilder(r).
 		GetPathParameterAndParseInt("id")
