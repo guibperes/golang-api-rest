@@ -19,18 +19,18 @@ func RequestBuilder(data *http.Request) Request {
 }
 
 // ParseJSONBody return object of request body
-func (request *Request) ParseJSONBody(data interface{}) {
+func (request Request) ParseJSONBody(data interface{}) {
 	json.
 		NewDecoder(request.Data.Body).
 		Decode(&data)
 }
 
 // GetPathParameter return specified parameter of URL path
-func (request *Request) GetPathParameter(value string) string {
+func (request Request) GetPathParameter(value string) string {
 	return mux.Vars(request.Data)[value]
 }
 
 // GetPathParameterAndParseInt return specified parameter of URL path and parse to int
-func (request *Request) GetPathParameterAndParseInt(value string) (int, error) {
+func (request Request) GetPathParameterAndParseInt(value string) (int, error) {
 	return strconv.Atoi(request.GetPathParameter(value))
 }

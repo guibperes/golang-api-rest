@@ -18,7 +18,7 @@ func ResponseBuilder(writer http.ResponseWriter, status int, data interface{}) R
 }
 
 // SendJSON create a JSON response
-func (response *Response) SendJSON() {
+func (response Response) SendJSON() {
 	response.
 		Writer.
 		WriteHeader(response.Status)
@@ -32,7 +32,7 @@ func (response *Response) SendJSON() {
 }
 
 // SendEmpty create a empty response
-func (response *Response) SendEmpty() {
+func (response Response) SendEmpty() {
 	response.
 		Writer.
 		WriteHeader(response.Status)

@@ -16,85 +16,97 @@ type Controller struct{}
 
 // Save a new post
 func (c *Controller) Save(w http.ResponseWriter, r *http.Request) {
-	var request = server.Request{Data: r}
-
 	var post Post
-	request.ParseJSONBody(&post)
+	server.
+		RequestBuilder(r).
+		ParseJSONBody(&post)
 
-	var response = server.Response{Writer: w, Status: 200, Data: service.Save(post)}
-	response.SendJSON()
+	server.
+		ResponseBuilder(w, 200, service.Save(post)).
+		SendJSON()
 }
 
 // UpdateByID a post
 func (c *Controller) UpdateByID(w http.ResponseWriter, r *http.Request) {
-	var request = server.Request{Data: r}
+	var request = server.RequestBuilder(r)
 	var postID, err = request.GetPathParameterAndParseInt("id")
+	var post Post
+	request.ParseJSONBody(&post)
 
 	if err != nil {
-		var response = server.Response{Writer: w, Status: 400, Data: libs.Message{Message: "Cannot convert id to integer"}}
-		response.SendJSON()
+		server.
+			ResponseBuilder(w, 400, libs.Message{Message: "Cannot convert id to integer"}).
+			SendJSON()
 		return
 	}
 
 	if postID < 0 || postID >= service.GetLength() {
-		var response = server.Response{Writer: w, Status: 404, Data: libs.Message{Message: "Cannot find post with the provided id"}}
-		response.SendJSON()
+		server.
+			ResponseBuilder(w, 404, libs.Message{Message: "Cannot find post with the provided id"}).
+			SendJSON()
 		return
 	}
 
-	var post Post
-	request.ParseJSONBody(&post)
-
-	var response = server.Response{Writer: w, Status: 200, Data: service.UpdateByID(postID, post)}
-	response.SendJSON()
+	server.
+		ResponseBuilder(w, 200, service.UpdateByID(postID, post)).
+		SendJSON()
 }
 
 // DeleteByID a post
 func (c *Controller) DeleteByID(w http.ResponseWriter, r *http.Request) {
-	var request = server.Request{Data: r}
-	var postID, err = request.GetPathParameterAndParseInt("id")
+	var postID, err = server.
+		RequestBuilder(r).
+		GetPathParameterAndParseInt("id")
 
 	if err != nil {
-		var response = server.Response{Writer: w, Status: 400, Data: libs.Message{Message: "Cannot convert id to integer"}}
-		response.SendJSON()
+		server.
+			ResponseBuilder(w, 400, libs.Message{Message: "Cannot convert id to integer"}).
+			SendJSON()
 		return
 	}
 
 	if postID < 0 || postID >= service.GetLength() {
-		var response = server.Response{Writer: w, Status: 404, Data: libs.Message{Message: "Cannot find post with the provided id"}}
-		response.SendJSON()
+		server.
+			ResponseBuilder(w, 404, libs.Message{Message: "Cannot find post with the provided id"}).
+			SendJSON()
 		return
 	}
 
 	service.DeleteByID(postID)
 
-	var response = server.Response{Writer: w, Status: 200}
-	response.SendEmpty()
+	server.
+		ResponseBuilder(w, 200, nil).
+		SendEmpty()
 }
 
 // GetAll saved posts
 func (c *Controller) GetAll(w http.ResponseWriter, r *http.Request) {
-	var response = server.Response{Writer: w, Status: 200, Data: service.GetAll()}
-	response.SendJSON()
+	server.
+		ResponseBuilder(w, 200, service.GetAll()).
+		SendJSON()
 }
 
 // GetByID a post
 func (c *Controller) GetByID(w http.ResponseWriter, r *http.Request) {
-	var request = server.Request{Data: r}
-	var postID, err = request.GetPathParameterAndParseInt("id")
+	var postID, err = server.
+		RequestBuilder(r).
+		GetPathParameterAndParseInt("id")
 
 	if err != nil {
-		var response = server.Response{Writer: w, Status: 400, Data: libs.Message{Message: "Cannot convert id to integer"}}
-		response.SendJSON()
+		server.
+			ResponseBuilder(w, 400, libs.Message{Message: "Cannot convert id to integer"}).
+			SendJSON()
 		return
 	}
 
 	if postID < 0 || postID >= service.GetLength() {
-		var response = server.Response{Writer: w, Status: 404, Data: libs.Message{Message: "Cannot find post with the provided id"}}
-		response.SendJSON()
+		server.
+			ResponseBuilder(w, 404, libs.Message{Message: "Cannot find post with the provided id"}).
+			SendJSON()
 		return
 	}
 
-	var response = server.Response{Writer: w, Status: 200, Data: service.GetByID(postID)}
-	response.SendJSON()
+	server.
+		ResponseBuilder(w, 200, service.GetByID(postID)).
+		SendJSON()
 }
