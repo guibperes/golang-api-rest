@@ -19,9 +19,7 @@ func ResponseBuilder(writer http.ResponseWriter, status int, data interface{}) R
 
 // SendJSON create a JSON response
 func (response Response) SendJSON() {
-	response.
-		Writer.
-		WriteHeader(response.Status)
+	response.SendEmpty()
 	response.
 		Writer.
 		Header().
