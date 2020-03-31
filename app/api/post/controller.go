@@ -3,16 +3,21 @@ package post
 import (
 	"net/http"
 
-	"github.com/guibperes/golang-api-rest/app/libs"
+	"github.com/guibperes/golang-api-rest/app/libs/message"
 	"github.com/guibperes/golang-api-rest/app/libs/server"
 )
 
 var (
-	service = Service{}
+	service = ServiceBuilder()
 )
 
 // Controller definition to access post functions
 type Controller struct{}
+
+// ControllerBuilder build the controller object
+func ControllerBuilder() Controller {
+	return Controller{}
+}
 
 // Save a new post
 func (c Controller) Save(w http.ResponseWriter, r *http.Request) {
@@ -35,14 +40,14 @@ func (c Controller) UpdateByID(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		server.
-			ResponseBuilder(w, 400, libs.Message{Message: "Cannot convert id to integer"}).
+			ResponseBuilder(w, 400, message.Builder("Cannot convert id to integer")).
 			SendJSON()
 		return
 	}
 
 	if postID < 0 || postID >= service.GetLength() {
 		server.
-			ResponseBuilder(w, 404, libs.Message{Message: "Cannot find post with the provided id"}).
+			ResponseBuilder(w, 404, message.Builder("Cannot find post with the provided id")).
 			SendJSON()
 		return
 	}
@@ -60,14 +65,14 @@ func (c Controller) DeleteByID(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		server.
-			ResponseBuilder(w, 400, libs.Message{Message: "Cannot convert id to integer"}).
+			ResponseBuilder(w, 400, message.Builder("Cannot convert id to integer")).
 			SendJSON()
 		return
 	}
 
 	if postID < 0 || postID >= service.GetLength() {
 		server.
-			ResponseBuilder(w, 404, libs.Message{Message: "Cannot find post with the provided id"}).
+			ResponseBuilder(w, 404, message.Builder("Cannot find post with the provided id")).
 			SendJSON()
 		return
 	}
@@ -94,14 +99,14 @@ func (c Controller) GetByID(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		server.
-			ResponseBuilder(w, 400, libs.Message{Message: "Cannot convert id to integer"}).
+			ResponseBuilder(w, 400, message.Builder("Cannot convert id to integer")).
 			SendJSON()
 		return
 	}
 
 	if postID < 0 || postID >= service.GetLength() {
 		server.
-			ResponseBuilder(w, 404, libs.Message{Message: "Cannot find post with the provided id"}).
+			ResponseBuilder(w, 404, message.Builder("Cannot find post with the provided id")).
 			SendJSON()
 		return
 	}

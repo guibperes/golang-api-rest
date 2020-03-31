@@ -3,6 +3,11 @@ package post
 // Service definition to access functions
 type Service struct{}
 
+// ServiceBuilder build the service object
+func ServiceBuilder() Service {
+	return Service{}
+}
+
 var database = []Post{}
 
 // Save a new post

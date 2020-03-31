@@ -3,19 +3,16 @@ package main
 import (
 	"net/http"
 
-	"github.com/guibperes/golang-api-rest/app/libs"
-
 	"github.com/gorilla/mux"
 	"github.com/guibperes/golang-api-rest/app/api/post"
-)
-
-var (
-	log            = libs.Log{}
-	postController = post.Controller{}
+	"github.com/guibperes/golang-api-rest/app/libs/log"
 )
 
 func main() {
 	var router = mux.NewRouter()
+	var log = log.Builder()
+
+	var postController = post.ControllerBuilder()
 
 	router.Use(log.GetLogMiddleware)
 
